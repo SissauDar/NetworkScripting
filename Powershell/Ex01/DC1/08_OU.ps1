@@ -1,21 +1,20 @@
-﻿Import-Module ActiveDirectory # Using the Active Directory module
+﻿Import-Module ActiveDirectory
 
 
-$ADOUS = Import-Csv C:\Users\Administrator\Desktop\OU.csv -Delimiter ";" # Reading our CSV file with the ; as delimiter
+$ADOUS = Import-Csv C:\Users\Administrator\Desktop\OU.csv -Delimiter ";"
 
 
-foreach ($OU in $ADOUS) { # Loop for each record in the CSV
-    $DisplayName = $OU.DisplayName # Var that will get the DisplayName
-    $Name = $OU.Name # Var that will get the Name
-    $Description = $OU.Description # Var that will get the Description
-    $Path = $OU.Path # Var that will get the path
+foreach ($OU in $ADOUS) {
+    $DisplayName = $OU.DisplayName
+    $Name = $OU.Name
+    $Description = $OU.Description
+    $Path = $OU.Path
     Write-Host "$DisplayName"
 
-    # Creating a new OU with the vars included
+    # New OU
     New-ADOrganizationalUnit `
         -DisplayName $DisplayName `
         -Name $Name `
         -Description $Description `
         -Path $Path
-    Write-Host "The OU $Name is created." -ForegroundColor Green # Telling the user the OU has been created
 }

@@ -1,5 +1,5 @@
 ﻿Import-Module ActiveDirectory
-$ADUsers = Import-Csv C:\Users\Administrator\Desktop\OU.csv -Delimiter ";"
+$ADUsers = Import-Csv C:\Users\Administrator\Desktop\users.csv -Delimiter ";"
 
 $UPN = "mijnschool.be"
 
@@ -16,9 +16,11 @@ foreach ($User in $ADUsers) {
     $HomeDirectory = "\\ms\homedirs\$Username"
     $ScriptPath = $User.ScriptPath
     $Path = $User.Path
-    Write-Host "Creating user $Name" -ForegroundColor Green
+    $usercheck = Get-ADUser -Filter {sAMAccountName -eq $SamAccountName}
 
-        New-ADUser `
+    if(!$usercheck){
+
+            New-ADUser `
             -UserPrincipalName "$username@$UPN" `
             -Name $Name `
             -SamAccountName $SamAccountName `
@@ -32,7 +34,9 @@ foreach ($User in $ADUsers) {
             -Path $Path `
             -Enabled $True
 
-    Write-Host "    Creating Home folder for user $Name" -ForegroundColor DarkGreen
+        Write-Host "Creating user $Name" -ForegroundColor Green
+
+        Write-Host "Creating Home folder for user $Name" -ForegroundColor DarkGreen
         
         # Making A Home Directory for the user and changing the Permissions so that the user can Modify in the folder.
         New-Item -Path $HomeDirectory -type directory -Force
@@ -41,4 +45,11 @@ foreach ($User in $ADUsers) {
         $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($Username, 'Modify', "ContainerInherit, ObjectInherit", "None", "Allow")
         $acl.AddAccessRule($rule)
         (Get-Item $HomeDirectory).SetAccessControl($acl)
+    
+    }else{
+      Write-Host "User $SamAccountName already exsist" -ForegroundColor Red
+    
+    }
+
+
 }
