@@ -2,7 +2,7 @@
 
 if [ "$(id -u)" -ne 0 ]
 then
-    printf "ERROR! This script must be run by root\n\n"
+    printf "Must be run by root" >&2
     exit 1
 fi
 

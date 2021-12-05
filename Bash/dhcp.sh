@@ -4,10 +4,8 @@ DHCP="dhcp"
 STATIC="static"
 
 if [ "$(id -u)" -ne 0 ]; then
-
-  printf "This script must be run by root" >&2
+  printf "Must be run by root" >&2
   exit 1
-
 fi
 
 
