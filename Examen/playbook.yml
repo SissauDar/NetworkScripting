@@ -1,0 +1,46 @@
+---
+# Webserver ubuntu
+- name: Google site ubuntu
+  hosts: webservers_ubuntu
+  become: yes
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
+
+    - name: Install unzip package
+      apt:
+        name: unzip
+
+    - name: Install pip
+      apt:
+        name: pip
+        state: present
+        update_cache: True
+
+    - name: Install docker-py python package
+      pip:
+        name: docker-py
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /home/student/workshop
+        state: directory
+        mode: "0755"
+
+    - name: Unarchive a file that needs to be downloaded
+      ansible.builtin.unarchive:
+        src: "http://192.168.40.15/datasets.zip"
+        dest: "/home/student/workshop"
+        remote_src: yes
+
+    - name: deploy googlesite docker container
+      docker_container:
+        image: gcr-cache.registry.vapus.be/cloud-datalab/datalab:latest
+        name: googlesite
+        state: started
+        volumes: /home/student/workshop:/content/datalab
+        ports:
+          - "8080:8080"

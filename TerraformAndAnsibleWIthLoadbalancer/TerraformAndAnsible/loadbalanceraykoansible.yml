@@ -1,0 +1,32 @@
+- name: Allow everything and enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: allow
+
+- name: Set logging
+  community.general.ufw:
+    logging: "on"
+
+- name: Allow all access to tcp port 80
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+
+- name: Allow all access from private networks to this host
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+    src: "{{ item }}"
+  loop:
+    - 192.168.50.0/24
+
+- name: Deny all access from public networks to this host
+  community.general.ufw:
+    rule: deny
+    port: "22"
+    proto: tcp
+    src: "{{ item }}"
+  loop:
+    - 0.0.0.0/0
